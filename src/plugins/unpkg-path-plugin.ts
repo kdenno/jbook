@@ -3,7 +3,7 @@ import axios from 'axios';
 import localForage from 'localforage';
 
 const fileCache = localForage.createInstance({
-  name: 'filecache'
+  name: 'filecache',
 });
 
 export const unpkgPathPlugin = () => {
@@ -39,24 +39,28 @@ export const unpkgPathPlugin = () => {
           return {
             loader: 'jsx',
             contents: `
-              import React, { useState } from 'react';
+              import React, { useState } from 'react-select';
               console.log(React, useState);
             `,
           };
         }
-        // check to see if we've already fetched this file and if its in the cache 
-        const cachedResult = await fileCache.getItem<esbuild.OnLoadResult>(args.path);
-        if(cachedResult) return cachedResult;
-        // if it is return it immediately
 
+        const cachedResult = await fileCache.getItem<esbuild.OnLoadResult>(
+          args.path
+        );
+
+        if (cachedResult) {
+          return cachedResult;
+        }
         const { data, request } = await axios.get(args.path);
-        const result: esbuild.OnLoadResult =  {
+
+        const result: esbuild.OnLoadResult = {
           loader: 'jsx',
           contents: data,
           resolveDir: new URL('./', request.responseURL).pathname,
         };
-        // store response in cache 
         await fileCache.setItem(args.path, result);
+
         return result;
       });
     },
