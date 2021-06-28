@@ -10,14 +10,14 @@ export const unpkgPathPlugin = (inputCode: string) => {
   return {
     name: 'unpkg-path-plugin',
     setup(build: esbuild.PluginBuild) {
-      
+
       // handle root entry file of index.js
-    build.onResolve({ filter: /(^index\.js$)/ }, async (args: any) => {
+    build.onResolve({ filter: /(^index\.js$)/ }, (args: any) => {
       return { path: args.path, namespace: 'a' };
     });
 
     // handle relative paths in a module
-    build.onResolve({ filter: /^\.+\// }, async (args: any) => {
+    build.onResolve({ filter: /^\.+\// }, (args: any) => {
       return {
         namespace: 'a',
         path: new URL(
