@@ -11,11 +11,11 @@ export const fetchPlugin = (inputCode: string) => {
     name: 'fetch-plugin',
     setup(build: esbuild.PluginBuild) {
       build.onLoad({ filter: /.*/ }, async (args: any) => {
-        console.log('onLoad', args);
+        const loader = args.path.match(/.css$/) ? 'css' : 'jsx';
 
         if (args.path === 'index.js') {
           return {
-            loader: 'jsx',
+            loader,
             contents: inputCode,
           };
         }
