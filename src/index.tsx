@@ -7,6 +7,7 @@ import React from 'react';
 
 const App = () => {
   const ref = useRef<any>();
+  const iframe = useRef<any>();
   const [input, setInput] = useState('');
   const [code, setCode] = useState('');
 
@@ -38,10 +39,24 @@ const App = () => {
 
     // console.log(result);
 
-    setCode(result.outputFiles[0].text);
+    // setCode(result.outputFiles[0].text);
+    // send message to iframe
+    iframe.current.contentWindow.postMessage(result.outputFiles[0].text, '*');
   };
   const html = `
-<script>${code}</script>`;
+  <html>
+  <head></head>
+  <body>
+  <div id="root"></div>
+  <script>
+  window.addEventListener('message', (event) => {
+    eval(event.data);
+  }, false);
+  </script>
+  </body>
+  </html>
+  
+  `;
   return (
     <div>
       <textarea
@@ -51,7 +66,8 @@ const App = () => {
       <div>
         <button onClick={onClick}>Submit</button>
       </div>
-      <iframe sandbox="allow-scripts">{html}</iframe>
+      <pre>{code}</pre>
+      <iframe ref={iframe} sandbox="allow-scripts" srcDoc={html}></iframe>
     </div>
   );
 };
