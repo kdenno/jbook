@@ -25,6 +25,8 @@ const App = () => {
     if (!ref.current) {
       return;
     }
+    // refresh contents of the iframe
+    iframe.current.srcdoc = html;
 
     const result = await ref.current.build({
       entryPoints: ['index.js'],
